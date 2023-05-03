@@ -133,7 +133,7 @@ export const categorySlice = createSlice({
             state.isLoading = false
 
             if (payload.status === 'success') {
-                console.log(payload.data.data)
+                // console.log(payload.data.data)
             } else {
                 state.error = payload.message
             }
