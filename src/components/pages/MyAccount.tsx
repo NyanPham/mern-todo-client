@@ -13,7 +13,7 @@ const MyAccount = () => {
         <div className="flex items-center justify-center gap-12 w-3/4 mx-auto">
             <div className="flex flex-row items-start justify-center bg-white/30 rounded-lg backdrop-blur-sm">
                 <div className="flex flex-col items-center justify-start py-10 px-16">
-                    <Avatar large />
+                    <Avatar large imageSrc={currentUser.imageSrc || 'default.jpg'} />
                     <h3 className="mt-7 text-lg text-cyan-900 font-normal italic">
                         <span className="font-semibold not-italic">Username: </span>
                         {currentUser.name}
@@ -31,7 +31,7 @@ const MyAccount = () => {
                         />
                     </div>
                     <div className="py-7 px-12">
-                        <UpdateAccount currentUser={currentUser} />
+                        <UpdateAccount />
                     </div>
                     <div className="py-7 px-12">
                         <UpdatePassword />

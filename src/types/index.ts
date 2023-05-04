@@ -151,3 +151,9 @@ export interface IFile {
     url: string
     name: string
 }
+
+export interface UpdatePasswordData {
+    currentPassword: string
+    password: string
+    passwordConfirm: string
+}

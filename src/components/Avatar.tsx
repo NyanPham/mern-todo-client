@@ -4,10 +4,15 @@ interface AvatarProps {
     imageSrc: string
     large?: boolean
     medium?: boolean
+    isPreview?: boolean
 }
 
-const Avatar: React.FC<AvatarProps> = ({ imageSrc, large, medium }) => {
-    const imgSrc = imageSrc == null || imageSrc === 'default.jpg' ? defaultUser : imageSrc
+const Avatar: React.FC<AvatarProps> = ({ imageSrc, large, medium, isPreview = false }) => {
+    let imgSrc = defaultUser
+
+    if (imageSrc != null && imageSrc !== 'default.jpg') {
+        imgSrc = isPreview ? imageSrc : `${import.meta.env.VITE_SERVER_URL}/public/images/avatars/${imageSrc}`
+    }
 
     let avatarSize = 'w-7 h-7'
     if (medium) avatarSize = 'w-16 h-16'
@@ -15,7 +20,7 @@ const Avatar: React.FC<AvatarProps> = ({ imageSrc, large, medium }) => {
 
     return (
         <div className={`rounded-full border-[1px] border-gray-300 overflow-hidden ${avatarSize}`}>
-            <img src={imgSrc} alt="Avatar" className="w-full h-full" />
+            <img src={imgSrc} alt="Avatar" className="w-full h-full" crossOrigin="anonymous" />
         </div>
     )
 }
