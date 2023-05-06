@@ -48,6 +48,7 @@ export interface Category {
     description?: string
     createdAt: Date
     modifiedAt: Date
+    displayOrder: number | 0
 }
 
 export interface CurrentUser {

@@ -4,6 +4,8 @@ import { LoginData, ResponseData } from '../types'
 import { hideLoading, showLoading } from './loadingLayerSlice'
 
 export const signIn = createAsyncThunk('user/signIn', async (body: LoginData, { dispatch }) => {
+    dispatch(showLoading())
+
     const res = await fetch(`${import.meta.env.VITE_SERVER_URL}/api/v1/auth/login`, {
         method: 'POST',
         headers: {
@@ -14,7 +16,7 @@ export const signIn = createAsyncThunk('user/signIn', async (body: LoginData, { 
         body: JSON.stringify(body),
     })
 
-    dispatch(showLoading())
+    console.log(res)
     const data: ResponseData = await res.json()
     dispatch(hideLoading())
 

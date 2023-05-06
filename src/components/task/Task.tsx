@@ -63,9 +63,10 @@ const Task: React.FC<Task> = ({ title, id, isComplete, dueDate }) => {
 
     return (
         <div
-            className={`flex flex-row items-center justify-between py-3 px-4 hover:bg-gray-900/30 cursor-pointer transition text-white ${
+            className={`select-none flex flex-row items-center justify-between py-3 px-4 hover:bg-gray-900/30 cursor-pointer transition text-white ${
                 currentIsHighlighted ? 'bg-yellow-500 duration-200 text-white' : 'duration-500'
             }`}
+            draggable
         >
             <div className="flex flex-row items-center justify-start gap-3">
                 <div

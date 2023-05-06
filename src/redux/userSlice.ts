@@ -4,6 +4,8 @@ import { CurrentUser, ResponseData, UpdatePasswordData } from '../types'
 import { hideLoading, showLoading } from './loadingLayerSlice'
 
 export const signOut = createAsyncThunk('users/signOut', async (_, { dispatch }) => {
+    dispatch(showLoading())
+
     const res = await fetch(`${import.meta.env.VITE_SERVER_URL}/api/v1/auth/logout`, {
         method: 'POST',
         headers: {
@@ -12,7 +14,6 @@ export const signOut = createAsyncThunk('users/signOut', async (_, { dispatch })
         credentials: 'include',
     })
 
-    dispatch(showLoading())
     const data: ResponseData = await res.json()
     dispatch(hideLoading())
 
@@ -20,6 +21,8 @@ export const signOut = createAsyncThunk('users/signOut', async (_, { dispatch })
 })
 
 export const updateAccount = createAsyncThunk('users/updateAccount', async (body: FormData, { dispatch }) => {
+    dispatch(showLoading())
+
     const res = await fetch(`${import.meta.env.VITE_SERVER_URL}/api/v1/me/myAccount`, {
         method: 'PATCH',
         headers: {},
@@ -27,7 +30,6 @@ export const updateAccount = createAsyncThunk('users/updateAccount', async (body
         body: body,
     })
 
-    dispatch(showLoading())
     const data: ResponseData = await res.json()
     dispatch(hideLoading())
 
@@ -37,6 +39,8 @@ export const updateAccount = createAsyncThunk('users/updateAccount', async (body
 export const updatePassword = createAsyncThunk(
     'users/updatePassword',
     async (body: UpdatePasswordData, { dispatch }) => {
+        dispatch(showLoading())
+
         const res = await fetch(`${import.meta.env.VITE_SERVER_URL}/api/v1/auth/updatePassword`, {
             method: 'PATCH',
             headers: {
@@ -46,7 +50,6 @@ export const updatePassword = createAsyncThunk(
             body: JSON.stringify(body),
         })
 
-        dispatch(showLoading())
         const data: ResponseData = await res.json()
         dispatch(hideLoading())
 

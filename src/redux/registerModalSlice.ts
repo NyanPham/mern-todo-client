@@ -14,6 +14,8 @@ const initialState: RegisterModalState = {
 }
 
 export const signUp = createAsyncThunk('user/signIn', async (body: RegisterData, { dispatch }) => {
+    dispatch(showLoading())
+
     const res = await fetch(`${import.meta.env.VITE_SERVER_URL}/api/v1/auth/register`, {
         method: 'POST',
         credentials: 'include',
@@ -24,7 +26,6 @@ export const signUp = createAsyncThunk('user/signIn', async (body: RegisterData,
         body: JSON.stringify(body),
     })
 
-    dispatch(showLoading())
     const data: ResponseData = await res.json()
     dispatch(hideLoading())
 
