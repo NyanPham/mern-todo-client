@@ -78,6 +78,7 @@ export interface InputProps {
     bgTransparent?: boolean
     underlineOnly?: boolean
     inputRef?: unknown
+    onKeyPress?: (e: React.KeyboardEvent<HTMLInputElement>) => void
 }
 
 export interface InputPlusProps {

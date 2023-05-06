@@ -29,7 +29,7 @@ const Categories = () => {
         setCategoryText(e.target.value)
     }
 
-    function onPlusIconClick() {
+    function onCreateCategory() {
         if (currentUser == null) {
             dispatch(
                 setToastInfo({
@@ -47,12 +47,17 @@ const Categories = () => {
         setCategoryText('')
     }
 
+    function onEnterPress(e: React.KeyboardEvent<HTMLInputElement>) {
+        if (e.code !== 'Enter') return
+        if (categoryText !== '') onCreateCategory()
+    }
+
     function handleCategoryClick(categoryId: string) {
         dispatch(selectCategory({ categoryId }))
     }
 
     return (
-        <div className="w-1/4 bg-white/20 rounded-lg backdrop-blur-lg shadow-white">
+        <div className="w-full bg-white/20 rounded-lg backdrop-blur-lg shadow-white md:w-1/3 lg:w-1/4">
             <div className="p-4">
                 <Heading title="List" subtitle="Task Categories" />
             </div>
@@ -84,7 +89,8 @@ const Categories = () => {
                     small
                     underlineOnly
                     bgTransparent
-                    onPlusIconClick={onPlusIconClick}
+                    onPlusIconClick={onCreateCategory}
+                    onKeyPress={onEnterPress}
                 />
             </div>
         </div>

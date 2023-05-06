@@ -33,7 +33,7 @@ const Tasks = () => {
         setTaskText(e.target.value)
     }
 
-    function onPlusIconClick() {
+    function onCreateTask() {
         if (currentUser == null) {
             dispatch(
                 setToastInfo({
@@ -51,8 +51,15 @@ const Tasks = () => {
         setTaskText('')
     }
 
+    function onEnterPress(e: React.KeyboardEvent<HTMLInputElement>) {
+        if (e.code !== 'Enter') return
+        if (taskText === '') return
+
+        onCreateTask()
+    }
+
     return (
-        <div className="w-3/5 bg-white/20 rounded-lg backdrop-blur-lg shadow-white overflow-hidden">
+        <div className="w-full bg-white/20 rounded-lg backdrop-blur-lg shadow-white overflow-hidden md:w-2/3 lg:-3/5">
             <CategoryHeading />
             <hr />
             {currentCategoryId ? (
@@ -89,7 +96,8 @@ const Tasks = () => {
                     small
                     underlineOnly
                     bgTransparent
-                    onPlusIconClick={onPlusIconClick}
+                    onPlusIconClick={onCreateTask}
+                    onKeyPress={onEnterPress}
                 />
             </div>
         </div>
