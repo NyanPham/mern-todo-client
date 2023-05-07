@@ -136,7 +136,7 @@ export const changeTaskOrdersAsync = createAsyncThunk(
                 body: JSON.stringify({ displayOrder: info.displayOrder }),
             })
         })
-
+        
         try {
             const responses = await Promise.all(promises)
             const data: ResponseData[] = await Promise.all(responses.map((res) => res.json()))

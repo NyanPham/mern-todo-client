@@ -1,4 +1,5 @@
-import { useRef, useEffect, useCallback } from 'react'
+import { useRef, useState, useEffect, useCallback } from 'react'
+import useDebounce from './useDebounce'
 
 function getAfterElement(y: number, otherElements: HTMLDivElement[]) {
     //@ts-ignore
@@ -25,6 +26,8 @@ export default function useDraggable(dependencies: any[], finishDropHandler?: ()
     const draggedBlock = useRef<HTMLDivElement | null>(null)
     const isDragging = useRef<boolean>(false)
 
+    const [count, setCount] = useState<number>(0)
+
     useEffect(() => {
         if (blocksContainerRef.current == null) return
         const container = blocksContainerRef.current
@@ -32,6 +35,19 @@ export default function useDraggable(dependencies: any[], finishDropHandler?: ()
         blocks.current = [...container.querySelectorAll('[data-drag-item]')] as HTMLDivElement[]
         draggedBlock.current = null
     }, [...dependencies])
+
+    useDebounce(
+        () => {
+            if (typeof finishDropHandler === 'function') {
+                const handler = finishDropHandler()
+                handler([
+                    ...(blocksContainerRef.current?.querySelectorAll('[data-drag-item]') || ([] as HTMLDivElement[])),
+                ])
+            }
+        },
+        1500,
+        [count]
+    )
 
     const handleDragStart = (e: React.DragEvent<HTMLDivElement>) => {
         isDragging.current = true
@@ -44,10 +60,7 @@ export default function useDraggable(dependencies: any[], finishDropHandler?: ()
         draggedBlock.current?.classList.remove('use-dragging')
         draggedBlock.current = null
 
-        if (typeof finishDropHandler === 'function') {
-            const handler = finishDropHandler()
-            handler([...(blocksContainerRef.current?.querySelectorAll('[data-drag-item]') || ([] as HTMLDivElement[]))])
-        }
+        setCount((prevCount) => prevCount + 1)
     }, [...dependencies, draggedBlock.current])
 
     const handleDragMove = useCallback(
