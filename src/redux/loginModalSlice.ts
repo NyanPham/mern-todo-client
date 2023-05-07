@@ -16,7 +16,6 @@ export const signIn = createAsyncThunk('user/signIn', async (body: LoginData, { 
         body: JSON.stringify(body),
     })
 
-    console.log(res)
     const data: ResponseData = await res.json()
     dispatch(hideLoading())
 

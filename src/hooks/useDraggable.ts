@@ -6,9 +6,8 @@ function getAfterElement(y: number, otherElements: HTMLDivElement[]) {
         (closest, child) => {
             const box = child.getBoundingClientRect()
             const offset = y - box.top - box.height / 2
-            console.log(offset)
+
             if (offset < 0 && offset > closest.offset) {
-                console.log('here')
                 return { offset: offset, element: child }
             } else {
                 return closest
@@ -20,7 +19,7 @@ function getAfterElement(y: number, otherElements: HTMLDivElement[]) {
     return state.element
 }
 
-export default function useDraggable(dependencies: any[]) {
+export default function useDraggable(dependencies: any[], finishDropHandler?: () => any) {
     const blocksContainerRef = useRef<HTMLDivElement>(null)
     const blocks = useRef<HTMLDivElement[] | null>(null)
     const draggedBlock = useRef<HTMLDivElement | null>(null)
@@ -34,20 +33,24 @@ export default function useDraggable(dependencies: any[]) {
         draggedBlock.current = null
     }, [...dependencies])
 
-    const handleDragStart = useCallback(
-        (e: React.DragEvent<HTMLDivElement>) => {
-            isDragging.current = true
-            draggedBlock.current = e.target as HTMLDivElement
-            draggedBlock.current.classList.add('use-dragging')
-        },
-        [...dependencies]
-    )
+    const handleDragStart = (e: React.DragEvent<HTMLDivElement>) => {
+        isDragging.current = true
+        draggedBlock.current = e.target as HTMLDivElement
+        draggedBlock.current.classList.add('use-dragging')
+    }
 
     const handleDragEnd = useCallback(
         (e: React.DragEvent<HTMLDivElement>) => {
             isDragging.current = false
             draggedBlock.current?.classList.remove('use-dragging')
             draggedBlock.current = null
+
+            if (typeof finishDropHandler === 'function') {
+                const handler = finishDropHandler()
+                handler([
+                    ...(blocksContainerRef.current?.querySelectorAll('[data-drag-item]') || ([] as HTMLDivElement[])),
+                ])
+            }
         },
         [...dependencies, draggedBlock.current]
     )

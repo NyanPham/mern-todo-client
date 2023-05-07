@@ -27,6 +27,8 @@ export const searchSlice = createSlice({
         setSearchTerm: (state, { payload }: { payload: ISearchPayload }) => {
             const { searchTerm, categories, tasks } = payload
 
+            console.log(tasks)
+
             state.searchTerm = searchTerm
             state.isSearching = true
 

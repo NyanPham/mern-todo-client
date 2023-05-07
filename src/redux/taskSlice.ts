@@ -9,7 +9,10 @@ import {
     DeleteTaskData,
     UpdateTaskData,
     TaskToUpdate,
+    UpdateOrder,
 } from '../types'
+import { setToastInfo, open as openToast } from './toastSlice'
+import { hideLoading, showLoading } from './loadingLayerSlice'
 
 export const createTaskAsync = createAsyncThunk('tasks/createTask', async (body: TaskData) => {
     const res = await fetch(`${import.meta.env.VITE_SERVER_URL}/api/v1/me/myTasks`, {
@@ -58,7 +61,7 @@ export const deleteTaskAsync = createAsyncThunk('tasks/deleteTask', async (body:
     return data
 })
 
-export const updateTaskAsync = createAsyncThunk('tasks/updateTask', async (body: UpdateTaskData) => {
+export const updateTaskAsync = createAsyncThunk('tasks/updateTask', async (body: UpdateTaskData, { dispatch }) => {
     const url = `${import.meta.env.VITE_SERVER_URL}/api/v1/me/myTasks/${body.taskId}`
 
     const taskToUpdate: TaskToUpdate = {
@@ -67,16 +70,49 @@ export const updateTaskAsync = createAsyncThunk('tasks/updateTask', async (body:
         dueDate: body.dueDate,
     }
 
-    const res = await fetch(url, {
-        method: 'PATCH',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        credentials: 'include',
-        body: JSON.stringify(taskToUpdate),
+    dispatch(showLoading())
+    try {
+        const res = await fetch(url, {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            credentials: 'include',
+            body: JSON.stringify(taskToUpdate),
+        })
+
+        const data: ResponseData = await res.json()
+        return data
+    } catch (error: any) {
+        dispatch(
+            setToastInfo({
+                title: 'Error',
+                subtitle: error.message,
+                type: 'error',
+            })
+        )
+
+        dispatch(openToast())
+    } finally {
+        dispatch(hideLoading())
+    }
+})
+
+export const changeTaskOrdersAsync = createAsyncThunk('tasks/updateTaskOrder', async (body: UpdateOrder[]) => {
+    const promises = body.map((info) => {
+        return fetch(`${import.meta.env.VITE_SERVER_URL}/api/v1/me/myTasks/${info.id}`, {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            credentials: 'include',
+            body: JSON.stringify({ displayOrder: info.displayOrder }),
+        })
     })
 
-    const data: ResponseData = await res.json()
+    const responses = await Promise.all(promises)
+    const data: ResponseData[] = await Promise.all(responses.map((res) => res.json()))
+
     return data
 })
 
@@ -200,18 +236,32 @@ export const taskSlice = createSlice({
         builder.addCase(updateTaskAsync.fulfilled, (state, { payload }) => {
             state.isLoading = false
 
-            if (payload.status === 'success') {
-                const task = state.tasks.find((task) => task._id === payload.data.data._id)
+            if (payload?.status === 'success') {
+                const task = state.tasks.find((task) => task._id === payload?.data.data._id)
                 if (task == null) return
 
-                task.title = payload.data.data.title
-                task.subtitle = payload.data.data.subtitle
-                task.dueDate = payload.data.data.dueDate
+                task.title = payload?.data.data.title
+                task.subtitle = payload?.data.data.subtitle
+                task.dueDate = payload?.data.data.dueDate
             } else {
-                state.error = payload.message
+                state.error = payload?.message
             }
         })
         builder.addCase(updateTaskAsync.rejected, (state) => {
+            state.isLoading = false
+            state.error = 'Something went wrong when updating the task'
+        })
+
+        builder.addCase(changeTaskOrdersAsync.pending, (state) => {
+            state.isLoading = true
+            state.error = ''
+            state.message = ''
+        })
+        builder.addCase(changeTaskOrdersAsync.fulfilled, (state, { payload }) => {
+            state.isLoading = false
+            state.message = 'Changed the order of tasks'
+        })
+        builder.addCase(changeTaskOrdersAsync.rejected, (state) => {
             state.isLoading = false
             state.error = 'Something went wrong when updating the task'
         })

@@ -11,8 +11,7 @@ import {
     setCategoriesFromUser,
     setHighlighted,
 } from '../../redux/categorySlice'
-import { Category as CategoryType } from '../../types'
-import useDraggable from '../../hooks/useDraggable'
+import useDraggableWithDatabase from '../../hooks/useDraggableWithDatabase'
 
 const Categories = () => {
     const currentUser = useAppSelector((state) => state.currentUser.userInfo)
@@ -22,7 +21,7 @@ const Categories = () => {
     const dispatch = useAppDispatch()
 
     const { blocksContainerRef, handleDragStart, handleDragEnd, handleDragMove, handleDragDrop } =
-        useDraggable(categories)
+        useDraggableWithDatabase(categories, 'category')
 
     useEffect(() => {
         if (isHighlighted === true) {
@@ -76,7 +75,7 @@ const Categories = () => {
         dispatch(selectCategory({ categoryId }))
     }
 
-    // Drag functionalities
+    // Drop end functionalities
 
     return (
         <div className="w-full bg-white/20 rounded-lg backdrop-blur-lg shadow-white md:w-1/3 lg:w-1/4">
@@ -125,7 +124,3 @@ const Categories = () => {
 }
 
 export default Categories
-
-function checkCategoriesOrder(categories: CategoryType[]) {
-    console.log(categories)
-}

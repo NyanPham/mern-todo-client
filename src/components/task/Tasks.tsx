@@ -5,16 +5,18 @@ import Task from './Task'
 import { setToastInfo, open as openToast } from '../../redux/toastSlice'
 import { createTaskAsync, removeTasks, setTasksFromUsers } from '../../redux/taskSlice'
 import CategoryHeading from '../category/CategoryHeading'
+import useDraggableWithDatabase from '../../hooks/useDraggableWithDatabase'
 
 const Tasks = () => {
     const currentUser = useAppSelector((state) => state.currentUser.userInfo)
     const tasks = useAppSelector((state) => state.task.tasks)
-    // const currentTaskId = useAppSelector((state) => state.task.currentTaskId)
+    const currentTaskId = useAppSelector((state) => state.task.currentTaskId)
     const currentCategoryId = useAppSelector((state) => state.category.currentCategoryId)
-
     const tasksInCategory = tasks.filter((task) => task.categoryId === currentCategoryId)
-
     const dispatch = useAppDispatch()
+
+    const { blocksContainerRef, handleDragStart, handleDragEnd, handleDragMove, handleDragDrop } =
+        useDraggableWithDatabase([...tasks, currentCategoryId], 'task')
 
     useEffect(() => {
         if (currentUser == null) {
@@ -63,7 +65,7 @@ const Tasks = () => {
             <CategoryHeading />
             <hr />
             {currentCategoryId ? (
-                <div className="max-h-96 overflow-y-auto">
+                <div className="max-h-96 overflow-y-auto" ref={blocksContainerRef}>
                     {currentUser && tasksInCategory?.length ? (
                         tasksInCategory.map((task) => (
                             <Task
@@ -73,6 +75,10 @@ const Tasks = () => {
                                 subtitle={task.subtitle}
                                 isComplete={task.isComplete}
                                 categoryId={task.categoryId}
+                                onDragStart={handleDragStart}
+                                onDragEnd={handleDragEnd}
+                                onDragMove={handleDragMove}
+                                onDragDrop={handleDragDrop}
                             />
                         ))
                     ) : (

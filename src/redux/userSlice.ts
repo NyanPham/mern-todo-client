@@ -97,7 +97,12 @@ export const userSlice = createSlice({
         setCurrentUser: (state, action: PayloadAction<CurrentUser>) => {
             state.userInfo = action.payload
 
-            if (action.payload.authExpiresDate) {
+            state.userInfo = {
+                ...action.payload,
+                categories: [...action.payload.categories].sort(
+                    (cate1, cate2) => cate1.displayOrder - cate2.displayOrder
+                ),
+                tasks: [...action.payload.tasks].sort((task1, task2) => task1.displayOrder - task2.displayOrder),
             }
         },
 
@@ -134,8 +139,6 @@ export const userSlice = createSlice({
             state.isLoading = false
             if (payload.status === 'success') {
                 state.userInfo = payload.data.data
-                if (payload.data.data.authExpiresDate) {
-                }
 
                 state.messages.updateAccount = 'Profile is updated successfully!'
             } else {
@@ -181,7 +184,15 @@ export const userSlice = createSlice({
         builder.addCase(checkLoggedIn.fulfilled, (state, { payload }) => {
             state.isLoading = false
             if (payload.status === 'success') {
-                state.userInfo = payload.data.currentUser
+                state.userInfo = {
+                    ...payload.data.currentUser,
+                    categories: [...payload.data.currentUser.categories].sort(
+                        (cate1, cate2) => cate1.displayOrder - cate2.displayOrder
+                    ),
+                    tasks: [...payload.data.currentUser.tasks].sort(
+                        (task1, task2) => task1.displayOrder - task2.displayOrder
+                    ),
+                }
             } else {
                 state.errors.updatePassword = payload.message || ''
             }

@@ -1,6 +1,15 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import type { RootState } from './store'
-import { CategoryData, CategoryToUpdate, DeleteCategoryData, ResponseData, UpdateCategoryData } from '../types'
+import {
+    CategoryData,
+    CategoryToUpdate,
+    DeleteCategoryData,
+    ResponseData,
+    UpdateCategoryData,
+    UpdateOrder,
+} from '../types'
+import { hideLoading, showLoading } from './loadingLayerSlice'
+import { setToastInfo, open as openToast } from './toastSlice'
 
 export const createCategoryAsync = createAsyncThunk('categories/create', async (body: CategoryData) => {
     const response = await fetch(`${import.meta.env.VITE_SERVER_URL}/api/v1/me/myCategories`, {
@@ -31,26 +40,66 @@ export const deleteCategoryAsync = createAsyncThunk('categories/deleteCategory',
     return data
 })
 
-export const updateCategoryAsync = createAsyncThunk('categoryies/updateCategory', async (body: UpdateCategoryData) => {
-    const url = `${import.meta.env.VITE_SERVER_URL}/api/v1/me/myCategories/${body.categoryId}`
+export const updateCategoryAsync = createAsyncThunk(
+    'categoryies/updateCategory',
+    async (body: UpdateCategoryData, { dispatch }) => {
+        const url = `${import.meta.env.VITE_SERVER_URL}/api/v1/me/myCategories/${body.categoryId}`
 
-    const categoryToUpdate: CategoryToUpdate = {
-        title: body.title,
-        description: body.description,
+        const categoryToUpdate: CategoryToUpdate = {
+            title: body.title,
+            description: body.description,
+        }
+
+        dispatch(showLoading())
+        try {
+            const res = await fetch(url, {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                credentials: 'include',
+                body: JSON.stringify(categoryToUpdate),
+            })
+
+            const data: ResponseData = await res.json()
+            return data
+        } catch (error) {
+            dispatch(
+                setToastInfo({
+                    title: 'Error',
+                    subtitle: 'Failed to update category',
+                    type: 'success',
+                })
+            )
+
+            dispatch(openToast())
+        } finally {
+            dispatch(hideLoading())
+        }
     }
+)
 
-    const res = await fetch(url, {
-        method: 'PATCH',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        credentials: 'include',
-        body: JSON.stringify(categoryToUpdate),
-    })
+export const changeCategoryOrdersAsync = createAsyncThunk(
+    'categories/updateCategoryOrder',
+    async (body: UpdateOrder[]) => {
+        console.log(body)
+        const promises = body.map((info) => {
+            return fetch(`${import.meta.env.VITE_SERVER_URL}/api/v1/me/myCategories/${info.id}`, {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                credentials: 'include',
+                body: JSON.stringify({ displayOrder: info.displayOrder }),
+            })
+        })
 
-    const data: ResponseData = await res.json()
-    return data
-})
+        const responses = await Promise.all(promises)
+        const data: ResponseData[] = await Promise.all(responses.map((res) => res.json()))
+
+        return data
+    }
+)
 
 interface CategoryState {
     categories: any[]
@@ -60,7 +109,7 @@ interface CategoryState {
     message: string | null
     isHighlighted: boolean
 }
-
+    
 const initialState: CategoryState = {
     categories: [],
     currentCategoryId: '',
@@ -158,17 +207,31 @@ export const categorySlice = createSlice({
         builder.addCase(updateCategoryAsync.fulfilled, (state, { payload }) => {
             state.isLoading = false
 
-            if (payload.status === 'success') {
+            if (payload?.status === 'success') {
                 const category = state.categories.find((category) => category._id === payload.data.data._id)
                 if (category == null) return
 
                 category.title = payload.data.data.title
                 category.description = payload.data.data.description
             } else {
-                state.error = payload.message
+                state.error = payload?.message
             }
         })
+
         builder.addCase(updateCategoryAsync.rejected, (state) => {
+            state.isLoading = false
+            state.error = 'Something went wrong when updating the category'
+        })
+        builder.addCase(changeCategoryOrdersAsync.pending, (state) => {
+            state.isLoading = true
+            state.error = ''
+            state.message = ''
+        })
+        builder.addCase(changeCategoryOrdersAsync.fulfilled, (state, { payload }) => {
+            state.isLoading = false
+            state.message = 'Changed the orders of categories'
+        })
+        builder.addCase(changeCategoryOrdersAsync.rejected, (state) => {
             state.isLoading = false
             state.error = 'Something went wrong when updating the category'
         })

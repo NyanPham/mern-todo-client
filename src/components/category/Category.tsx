@@ -33,7 +33,7 @@ const Category: React.FC<CategoryProps> = ({
             onDragEnd={onDragEnd}
             onDragOver={onDragMove}
             onDrop={onDragDrop}
-            data-drag-item
+            data-drag-item={id}
         >
             {title}
         </div>

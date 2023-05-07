@@ -21,9 +21,14 @@ interface Task {
     createdAt?: Date
     modifiedAt?: Date
     dueDate?: Date
+
+    onDragStart: (e: React.DragEvent<HTMLInputElement>) => void
+    onDragMove: (e: React.DragEvent<HTMLInputElement>) => void
+    onDragEnd: (e: React.DragEvent<HTMLInputElement>) => void
+    onDragDrop: (e: React.DragEvent<HTMLInputElement>) => void
 }
 
-const Task: React.FC<Task> = ({ title, id, isComplete, dueDate }) => {
+const Task: React.FC<Task> = ({ title, id, isComplete, dueDate, onDragStart, onDragMove, onDragEnd, onDragDrop }) => {
     const currentTaskId = useAppSelector((state) => state.task.currentTaskId)
     const isHighlighted = useAppSelector((state) => state.task.isHighlighted)
     const dispatch = useAppDispatch()
@@ -67,6 +72,11 @@ const Task: React.FC<Task> = ({ title, id, isComplete, dueDate }) => {
                 currentIsHighlighted ? 'bg-yellow-500 duration-200 text-white' : 'duration-500'
             }`}
             draggable
+            onDragStart={onDragStart}
+            onDragEnd={onDragEnd}
+            onDragOver={onDragMove}
+            onDrop={onDragDrop}
+            data-drag-item={id}
         >
             <div className="flex flex-row items-center justify-start gap-3">
                 <div
