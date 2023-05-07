@@ -111,7 +111,6 @@ export const updateCategoryAsync = createAsyncThunk(
 export const changeCategoryOrdersAsync = createAsyncThunk(
     'categories/updateCategoryOrder',
     async (body: UpdateOrder[]) => {
-        console.log(body)
         const promises = body.map((info) => {
             return fetch(`${import.meta.env.VITE_SERVER_URL}/api/v1/me/myCategories/${info.id}`, {
                 method: 'PATCH',

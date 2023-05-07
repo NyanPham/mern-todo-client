@@ -10,9 +10,6 @@ const SearchBar = () => {
     const tasks = useAppSelector((state) => state.task.tasks)
     const categories = useAppSelector((state) => state.category.categories)
 
-    console.log(tasks)
-    console.log(categories)
-
     const inputRef = useRef<HTMLInputElement>(null)
     const dispatch = useAppDispatch()
     const navigate = useNavigate()

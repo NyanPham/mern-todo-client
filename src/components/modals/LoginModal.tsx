@@ -66,7 +66,6 @@ const LoginModal = () => {
     const handleSignIn = useCallback(async () => {
         const { payload }: { payload: any } = await dispatch(signIn(form))
 
-        console.log(payload)
         if (payload.status === 'success') {
             dispatch(
                 setToastInfo({

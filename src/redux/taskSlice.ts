@@ -226,7 +226,6 @@ export const taskSlice = createSlice({
             state.isLoading = false
 
             if (payload.status === 'success') {
-                // console.log(payload.data.data)
             } else {
                 state.error = payload.message
             }
