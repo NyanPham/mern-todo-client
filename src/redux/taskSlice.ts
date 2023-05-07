@@ -204,7 +204,12 @@ export const taskSlice = createSlice({
             state.isHighlighted = payload
         },
         setTasksFromOrders: (state, { payload }: { payload: UpdateOrder[] }) => {
-            state.tasks = payload.map((orderInfo) => state.tasks.find((task) => task._id === orderInfo.id)!)
+            const orderedTasks = [...payload.map((orderInfo) => state.tasks.find((task) => task._id === orderInfo.id)!)]
+
+            state.tasks = {
+                ...state.tasks.filter((task) => !payload.some((ordered) => ordered.id === task._id)),
+                ...orderedTasks,
+            }
         },
     },
     extraReducers: (builder) => {
