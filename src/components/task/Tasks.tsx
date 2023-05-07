@@ -10,7 +10,7 @@ import useDraggableWithDatabase from '../../hooks/useDraggableWithDatabase'
 const Tasks = () => {
     const currentUser = useAppSelector((state) => state.currentUser.userInfo)
     const tasks = useAppSelector((state) => state.task.tasks)
-    const currentTaskId = useAppSelector((state) => state.task.currentTaskId)
+    // const currentTaskId = useAppSelector((state) => state.task.currentTaskId)
     const currentCategoryId = useAppSelector((state) => state.category.currentCategoryId)
     const tasksInCategory = tasks.filter((task) => task.categoryId === currentCategoryId)
     const dispatch = useAppDispatch()

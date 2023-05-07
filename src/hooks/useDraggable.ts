@@ -39,21 +39,16 @@ export default function useDraggable(dependencies: any[], finishDropHandler?: ()
         draggedBlock.current.classList.add('use-dragging')
     }
 
-    const handleDragEnd = useCallback(
-        (e: React.DragEvent<HTMLDivElement>) => {
-            isDragging.current = false
-            draggedBlock.current?.classList.remove('use-dragging')
-            draggedBlock.current = null
+    const handleDragEnd = useCallback(() => {
+        isDragging.current = false
+        draggedBlock.current?.classList.remove('use-dragging')
+        draggedBlock.current = null
 
-            if (typeof finishDropHandler === 'function') {
-                const handler = finishDropHandler()
-                handler([
-                    ...(blocksContainerRef.current?.querySelectorAll('[data-drag-item]') || ([] as HTMLDivElement[])),
-                ])
-            }
-        },
-        [...dependencies, draggedBlock.current]
-    )
+        if (typeof finishDropHandler === 'function') {
+            const handler = finishDropHandler()
+            handler([...(blocksContainerRef.current?.querySelectorAll('[data-drag-item]') || ([] as HTMLDivElement[]))])
+        }
+    }, [...dependencies, draggedBlock.current])
 
     const handleDragMove = useCallback(
         (e: React.DragEvent<HTMLDivElement>) => {
@@ -73,7 +68,7 @@ export default function useDraggable(dependencies: any[], finishDropHandler?: ()
         [...dependencies, isDragging.current, blocks.current, draggedBlock.current]
     )
 
-    const handleDragDrop = (e: React.DragEvent<HTMLDivElement>) => {}
+    const handleDragDrop = () => {}
 
     return { blocksContainerRef, handleDragStart, handleDragEnd, handleDragMove, handleDragDrop }
 }

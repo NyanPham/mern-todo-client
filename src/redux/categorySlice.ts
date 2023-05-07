@@ -109,7 +109,7 @@ interface CategoryState {
     message: string | null
     isHighlighted: boolean
 }
-    
+
 const initialState: CategoryState = {
     categories: [],
     currentCategoryId: '',
@@ -227,9 +227,8 @@ export const categorySlice = createSlice({
             state.error = ''
             state.message = ''
         })
-        builder.addCase(changeCategoryOrdersAsync.fulfilled, (state, { payload }) => {
+        builder.addCase(changeCategoryOrdersAsync.fulfilled, (state) => {
             state.isLoading = false
-            state.message = 'Changed the orders of categories'
         })
         builder.addCase(changeCategoryOrdersAsync.rejected, (state) => {
             state.isLoading = false

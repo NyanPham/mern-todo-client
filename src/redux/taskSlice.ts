@@ -257,7 +257,7 @@ export const taskSlice = createSlice({
             state.error = ''
             state.message = ''
         })
-        builder.addCase(changeTaskOrdersAsync.fulfilled, (state, { payload }) => {
+        builder.addCase(changeTaskOrdersAsync.fulfilled, (state) => {
             state.isLoading = false
             state.message = 'Changed the order of tasks'
         })

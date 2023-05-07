@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from 'react'
+import { useEffect, useState } from 'react'
 import Heading from '../Heading'
 import InputWithPlus from '../inputs/InputWithPlus'
 import Category from './Category'
