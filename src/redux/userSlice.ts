@@ -2,38 +2,65 @@ import { PayloadAction, createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 import type { RootState } from './store'
 import { CurrentUser, ResponseData, UpdatePasswordData } from '../types'
 import { hideLoading, showLoading } from './loadingLayerSlice'
+import { setToastInfo, open as openToast } from './toastSlice'
 
 export const signOut = createAsyncThunk('users/signOut', async (_, { dispatch }) => {
     dispatch(showLoading())
 
-    const res = await fetch(`${import.meta.env.VITE_SERVER_URL}/api/v1/auth/logout`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        credentials: 'include',
-    })
+    try {
+        const res = await fetch(`${import.meta.env.VITE_SERVER_URL}/api/v1/auth/logout`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            credentials: 'include',
+        })
 
-    const data: ResponseData = await res.json()
-    dispatch(hideLoading())
+        const data: ResponseData = await res.json()
 
-    return data
+        return data
+    } catch (error: any) {
+        dispatch(
+            setToastInfo({
+                title: 'Error',
+                subtitle: error.message,
+                type: 'error',
+            })
+        )
+
+        dispatch(openToast())
+    } finally {
+        dispatch(hideLoading())
+    }
 })
 
 export const updateAccount = createAsyncThunk('users/updateAccount', async (body: FormData, { dispatch }) => {
     dispatch(showLoading())
 
-    const res = await fetch(`${import.meta.env.VITE_SERVER_URL}/api/v1/me/myAccount`, {
-        method: 'PATCH',
-        headers: {},
-        credentials: 'include',
-        body: body,
-    })
+    try {
+        const res = await fetch(`${import.meta.env.VITE_SERVER_URL}/api/v1/me/myAccount`, {
+            method: 'PATCH',
+            headers: {},
+            credentials: 'include',
+            body: body,
+        })
 
-    const data: ResponseData = await res.json()
-    dispatch(hideLoading())
+        const data: ResponseData = await res.json()
 
-    return data
+        return data
+    } catch (error: any) {
+        dispatch(
+            setToastInfo({
+                title: 'Error',
+                subtitle: error.message,
+                type: 'error',
+            })
+        )
+
+        dispatch(openToast())
+    } finally {
+        dispatch(hideLoading())
+    }
 })
 
 export const updatePassword = createAsyncThunk(
@@ -41,33 +68,63 @@ export const updatePassword = createAsyncThunk(
     async (body: UpdatePasswordData, { dispatch }) => {
         dispatch(showLoading())
 
-        const res = await fetch(`${import.meta.env.VITE_SERVER_URL}/api/v1/auth/updatePassword`, {
-            method: 'PATCH',
+        try {
+            const res = await fetch(`${import.meta.env.VITE_SERVER_URL}/api/v1/auth/updatePassword`, {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                credentials: 'include',
+                body: JSON.stringify(body),
+            })
+
+            const data: ResponseData = await res.json()
+
+            return data
+        } catch (error: any) {
+            dispatch(
+                setToastInfo({
+                    title: 'Error',
+                    subtitle: error.message,
+                    type: 'error',
+                })
+            )
+
+            dispatch(openToast())
+        } finally {
+            dispatch(hideLoading())
+        }
+    }
+)
+
+export const checkLoggedIn = createAsyncThunk('users/checkLoggedIn', async (_, { dispatch }) => {
+    dispatch(showLoading())
+
+    try {
+        const res = await fetch(`${import.meta.env.VITE_SERVER_URL}/api/v1/me`, {
+            method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
             },
             credentials: 'include',
-            body: JSON.stringify(body),
         })
 
         const data: ResponseData = await res.json()
-        dispatch(hideLoading())
 
         return data
+    } catch (error: any) {
+        dispatch(
+            setToastInfo({
+                title: 'Error',
+                subtitle: error.message,
+                type: 'error',
+            })
+        )
+
+        dispatch(openToast())
+    } finally {
+        dispatch(hideLoading())
     }
-)
-
-export const checkLoggedIn = createAsyncThunk('users/checkLoggedIn', async () => {
-    const res = await fetch(`${import.meta.env.VITE_SERVER_URL}/api/v1/me`, {
-        method: 'GET',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        credentials: 'include',
-    })
-
-    const data: ResponseData = await res.json()
-    return data
 })
 
 interface IUserAsyncState {
@@ -119,10 +176,10 @@ export const userSlice = createSlice({
         builder.addCase(signOut.fulfilled, (state, { payload }) => {
             state.isLoading = false
 
-            if (payload.status === 'success') {
+            if (payload?.status === 'success') {
                 state.userInfo = null
             } else {
-                state.errors.signOut = payload.message || ''
+                state.errors.signOut = payload?.message || ''
             }
         })
         builder.addCase(signOut.rejected, (state) => {
@@ -137,12 +194,12 @@ export const userSlice = createSlice({
         })
         builder.addCase(updateAccount.fulfilled, (state, { payload }) => {
             state.isLoading = false
-            if (payload.status === 'success') {
-                state.userInfo = payload.data.data
+            if (payload?.status === 'success') {
+                state.userInfo = payload?.data.data
 
                 state.messages.updateAccount = 'Profile is updated successfully!'
             } else {
-                state.errors.updatePassword = payload.message || ''
+                state.errors.updatePassword = payload?.message || ''
             }
         })
         builder.addCase(updateAccount.rejected, (state) => {
@@ -157,10 +214,10 @@ export const userSlice = createSlice({
         })
         builder.addCase(updatePassword.fulfilled, (state, { payload }) => {
             state.isLoading = false
-            if (payload.status === 'success') {
+            if (payload?.status === 'success') {
                 state.messages.updatePassword = 'Your password has been updated!'
             } else {
-                state.errors.updatePassword = payload.message || ''
+                state.errors.updatePassword = payload?.message || ''
             }
         })
         builder.addCase(updatePassword.rejected, (state) => {
@@ -183,18 +240,18 @@ export const userSlice = createSlice({
         })
         builder.addCase(checkLoggedIn.fulfilled, (state, { payload }) => {
             state.isLoading = false
-            if (payload.status === 'success') {
+            if (payload?.status === 'success') {
                 state.userInfo = {
-                    ...payload.data.currentUser,
-                    categories: [...payload.data.currentUser.categories].sort(
+                    ...payload?.data.currentUser,
+                    categories: [...payload?.data.currentUser.categories].sort(
                         (cate1, cate2) => cate1.displayOrder - cate2.displayOrder
                     ),
-                    tasks: [...payload.data.currentUser.tasks].sort(
+                    tasks: [...payload?.data.currentUser.tasks].sort(
                         (task1, task2) => task1.displayOrder - task2.displayOrder
                     ),
                 }
             } else {
-                state.errors.updatePassword = payload.message || ''
+                state.errors.updatePassword = payload?.message || ''
             }
         })
         builder.addCase(checkLoggedIn.rejected, (state) => {

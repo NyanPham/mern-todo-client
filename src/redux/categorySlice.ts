@@ -11,34 +11,63 @@ import {
 import { hideLoading, showLoading } from './loadingLayerSlice'
 import { setToastInfo, open as openToast } from './toastSlice'
 
-export const createCategoryAsync = createAsyncThunk('categories/create', async (body: CategoryData) => {
-    const response = await fetch(`${import.meta.env.VITE_SERVER_URL}/api/v1/me/myCategories`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'Access-Control-Allow-Credentials': 'true',
-        },
-        credentials: 'include',
-        body: JSON.stringify(body),
-    })
+export const createCategoryAsync = createAsyncThunk('categories/create', async (body: CategoryData, { dispatch }) => {
+    dispatch(showLoading())
+    try {
+        const response = await fetch(`${import.meta.env.VITE_SERVER_URL}/api/v1/me/myCategories`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Access-Control-Allow-Credentials': 'true',
+            },
+            credentials: 'include',
+            body: JSON.stringify(body),
+        })
 
-    const data: ResponseData = await response.json()
-    return data
+        const data: ResponseData = await response.json()
+        return data
+    } catch (error: any) {
+        dispatch(
+            setToastInfo({
+                title: 'Error',
+                subtitle: 'Failed to update category',
+                type: 'error',
+            })
+        )
+
+        dispatch(openToast())
+    } finally {
+        dispatch(hideLoading())
+    }
 })
 
-export const deleteCategoryAsync = createAsyncThunk('categories/deleteCategory', async (body: DeleteCategoryData) => {
-    const url = `${import.meta.env.VITE_SERVER_URL}/api/v1/me/myCategories/${body.categoryId}`
-    const res = await fetch(url, {
-        method: 'DELETE',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        credentials: 'include',
-    })
+export const deleteCategoryAsync = createAsyncThunk(
+    'categories/deleteCategory',
+    async (body: DeleteCategoryData, { dispatch }) => {
+        try {
+            const url = `${import.meta.env.VITE_SERVER_URL}/api/v1/me/myCategories/${body.categoryId}`
+            const res = await fetch(url, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                credentials: 'include',
+            })
+        } catch (error: any) {
+            dispatch(
+                setToastInfo({
+                    title: 'Error',
+                    subtitle: error.message,
+                    type: 'error',
+                })
+            )
 
-    const data: ResponseData = await res.json()
-    return data
-})
+            dispatch(openToast())
+        } finally {
+            dispatch(hideLoading())
+        }
+    }
+)
 
 export const updateCategoryAsync = createAsyncThunk(
     'categoryies/updateCategory',
@@ -68,7 +97,7 @@ export const updateCategoryAsync = createAsyncThunk(
                 setToastInfo({
                     title: 'Error',
                     subtitle: 'Failed to update category',
-                    type: 'success',
+                    type: 'error',
                 })
             )
 
@@ -169,11 +198,11 @@ export const categorySlice = createSlice({
         builder.addCase(createCategoryAsync.fulfilled, (state, { payload }) => {
             state.isLoading = false
 
-            if (payload.status === 'success') {
+            if (payload?.status === 'success') {
                 state.categories.push(payload.data.data)
                 state.currentCategoryId = payload.data.data._id
             } else {
-                state.error = payload.message
+                state.error = payload?.message
             }
         })
         builder.addCase(createCategoryAsync.rejected, (state) => {
@@ -186,14 +215,8 @@ export const categorySlice = createSlice({
             state.error = ''
             state.message = ''
         })
-        builder.addCase(deleteCategoryAsync.fulfilled, (state, { payload }) => {
+        builder.addCase(deleteCategoryAsync.fulfilled, (state) => {
             state.isLoading = false
-
-            if (payload.status === 'success') {
-                // console.log(payload.data.data)
-            } else {
-                state.error = payload.message
-            }
         })
         builder.addCase(deleteCategoryAsync.rejected, (state) => {
             state.isLoading = false

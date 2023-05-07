@@ -14,18 +14,33 @@ import {
 import { setToastInfo, open as openToast } from './toastSlice'
 import { hideLoading, showLoading } from './loadingLayerSlice'
 
-export const createTaskAsync = createAsyncThunk('tasks/createTask', async (body: TaskData) => {
-    const res = await fetch(`${import.meta.env.VITE_SERVER_URL}/api/v1/me/myTasks`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        credentials: 'include',
-        body: JSON.stringify(body),
-    })
+export const createTaskAsync = createAsyncThunk('tasks/createTask', async (body: TaskData, { dispatch }) => {
+    dispatch(showLoading())
 
-    const data: ResponseData = await res.json()
-    return data
+    try {
+        const res = await fetch(`${import.meta.env.VITE_SERVER_URL}/api/v1/me/myTasks`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            credentials: 'include',
+            body: JSON.stringify(body),
+        })
+
+        const data: ResponseData = await res.json()
+        return data
+    } catch (error: any) {
+        dispatch(
+            setToastInfo({
+                title: 'Error',
+                subtitle: error.message,
+                type: 'error',
+            })
+        )
+        dispatch(openToast())
+    } finally {
+        dispatch(hideLoading())
+    }
 })
 
 export const toggleCompleteAsync = createAsyncThunk('tasks/toggleTask', async (body: ToggleTaskData) => {
@@ -47,18 +62,28 @@ export const toggleCompleteAsync = createAsyncThunk('tasks/toggleTask', async (b
     return data
 })
 
-export const deleteTaskAsync = createAsyncThunk('tasks/deleteTask', async (body: DeleteTaskData) => {
-    const url = `${import.meta.env.VITE_SERVER_URL}/api/v1/me/myTasks/${body.taskId}`
-    const res = await fetch(url, {
-        method: 'DELETE',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        credentials: 'include',
-    })
-
-    const data: ResponseData = await res.json()
-    return data
+export const deleteTaskAsync = createAsyncThunk('tasks/deleteTask', async (body: DeleteTaskData, { dispatch }) => {
+    try {
+        const url = `${import.meta.env.VITE_SERVER_URL}/api/v1/me/myTasks/${body.taskId}`
+        const res = await fetch(url, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            credentials: 'include',
+        })
+    } catch (error: any) {
+        dispatch(
+            setToastInfo({
+                title: 'Error',
+                subtitle: error.message,
+                type: 'error',
+            })
+        )
+        dispatch(openToast())
+    } finally {
+        dispatch(hideLoading())
+    }
 })
 
 export const updateTaskAsync = createAsyncThunk('tasks/updateTask', async (body: UpdateTaskData, { dispatch }) => {
@@ -181,11 +206,11 @@ export const taskSlice = createSlice({
         builder.addCase(createTaskAsync.fulfilled, (state, { payload }) => {
             state.isLoading = false
 
-            if (payload.status === 'success') {
+            if (payload?.status === 'success') {
                 state.tasks.push(payload.data.data)
                 state.currentTaskId = payload.data.data._id
             } else {
-                state.error = payload.message
+                state.error = payload?.message
             }
         })
         builder.addCase(createTaskAsync.rejected, (state) => {
@@ -215,14 +240,8 @@ export const taskSlice = createSlice({
             state.error = ''
             state.message = ''
         })
-        builder.addCase(deleteTaskAsync.fulfilled, (state, { payload }) => {
+        builder.addCase(deleteTaskAsync.fulfilled, (state) => {
             state.isLoading = false
-
-            if (payload.status === 'success') {
-                // console.log(payload.data.data)
-            } else {
-                state.error = payload.message
-            }
         })
         builder.addCase(deleteTaskAsync.rejected, (state) => {
             state.isLoading = false

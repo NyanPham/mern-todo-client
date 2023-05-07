@@ -2,6 +2,7 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 import type { RootState } from './store'
 import { RegisterData, ResponseData } from '../types'
 import { hideLoading, showLoading } from './loadingLayerSlice'
+import { setToastInfo, open as openToast } from './toastSlice'
 
 export interface RegisterModalState {
     isOpen: boolean
@@ -15,21 +16,33 @@ const initialState: RegisterModalState = {
 
 export const signUp = createAsyncThunk('user/signIn', async (body: RegisterData, { dispatch }) => {
     dispatch(showLoading())
+    try {
+        const res = await fetch(`${import.meta.env.VITE_SERVER_URL}/api/v1/auth/register`, {
+            method: 'POST',
+            credentials: 'include',
+            headers: {
+                'Content-Type': 'application/json',
+                'Access-Control-Allow-Credentials': 'true',
+            },
+            body: JSON.stringify(body),
+        })
 
-    const res = await fetch(`${import.meta.env.VITE_SERVER_URL}/api/v1/auth/register`, {
-        method: 'POST',
-        credentials: 'include',
-        headers: {
-            'Content-Type': 'application/json',
-            'Access-Control-Allow-Credentials': 'true',
-        },
-        body: JSON.stringify(body),
-    })
+        const data: ResponseData = await res.json()
 
-    const data: ResponseData = await res.json()
-    dispatch(hideLoading())
+        return data
+    } catch (error: any) {
+        dispatch(
+            setToastInfo({
+                title: 'Error',
+                subtitle: error.message,
+                type: 'error',
+            })
+        )
 
-    return data
+        dispatch(openToast())
+    } finally {
+        dispatch(hideLoading())
+    }
 })
 
 export const registerModalSlice = createSlice({

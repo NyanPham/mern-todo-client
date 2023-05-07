@@ -21,7 +21,7 @@ const Categories = () => {
     const dispatch = useAppDispatch()
 
     const { blocksContainerRef, handleDragStart, handleDragEnd, handleDragMove, handleDragDrop } =
-        useDraggableWithDatabase(categories, 'category')
+        useDraggableWithDatabase([categories], 'category')
 
     useEffect(() => {
         if (isHighlighted === true) {

@@ -31,6 +31,8 @@ export default function useDraggable(dependencies: any[], finishDropHandler?: ()
 
         blocks.current = [...container.querySelectorAll('[data-drag-item]')] as HTMLDivElement[]
         draggedBlock.current = null
+
+        console.log(blocks.current)
     }, [...dependencies])
 
     const handleDragStart = (e: React.DragEvent<HTMLDivElement>) => {

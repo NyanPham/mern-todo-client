@@ -16,7 +16,7 @@ const Tasks = () => {
     const dispatch = useAppDispatch()
 
     const { blocksContainerRef, handleDragStart, handleDragEnd, handleDragMove, handleDragDrop } =
-        useDraggableWithDatabase([...tasks, currentCategoryId], 'task')
+        useDraggableWithDatabase([tasks, currentCategoryId], 'task')
 
     useEffect(() => {
         if (currentUser == null) {
