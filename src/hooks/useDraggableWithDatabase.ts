@@ -10,7 +10,6 @@ export default function useDraggableWithDatabase(dependencies: any[], type: 'cat
 
     const finishDropHandler = useCallback(() => {
         return (blocks: HTMLDivElement[]) => {
-            console.log('updated order')
             //@ts-ignore
             const blocksOrder = blocks.map((block: HTMLDivElement, index: number) => ({
                 id: block.dataset.dragItem,
