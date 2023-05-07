@@ -123,23 +123,30 @@ export const updateTaskAsync = createAsyncThunk('tasks/updateTask', async (body:
     }
 })
 
-export const changeTaskOrdersAsync = createAsyncThunk('tasks/updateTaskOrder', async (body: UpdateOrder[]) => {
-    const promises = body.map((info) => {
-        return fetch(`${import.meta.env.VITE_SERVER_URL}/api/v1/me/myTasks/${info.id}`, {
-            method: 'PATCH',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            credentials: 'include',
-            body: JSON.stringify({ displayOrder: info.displayOrder }),
+export const changeTaskOrdersAsync = createAsyncThunk(
+    'tasks/updateTaskOrder',
+    async (body: UpdateOrder[], { dispatch }) => {
+        const promises = body.map((info) => {
+            return fetch(`${import.meta.env.VITE_SERVER_URL}/api/v1/me/myTasks/${info.id}`, {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                credentials: 'include',
+                body: JSON.stringify({ displayOrder: info.displayOrder }),
+            })
         })
-    })
 
-    const responses = await Promise.all(promises)
-    const data: ResponseData[] = await Promise.all(responses.map((res) => res.json()))
+        try {
+            const responses = await Promise.all(promises)
+            const data: ResponseData[] = await Promise.all(responses.map((res) => res.json()))
 
-    return data
-})
+            dispatch(setTasksFromOrders(body))
+
+            return data
+        } catch (error: any) {}
+    }
+)
 
 interface TaskState {
     tasks: Task[]
@@ -195,6 +202,9 @@ export const taskSlice = createSlice({
         },
         setHighlighted: (state, { payload }: { payload: boolean }) => {
             state.isHighlighted = payload
+        },
+        setTasksFromOrders: (state, { payload }: { payload: UpdateOrder[] }) => {
+            state.tasks = payload.map((orderInfo) => state.tasks.find((task) => task._id === orderInfo.id)!)
         },
     },
     extraReducers: (builder) => {
@@ -294,6 +304,7 @@ export const {
     removeTask,
     setCurrentTaskId,
     setHighlighted,
+    setTasksFromOrders,
 } = taskSlice.actions
 export const tasks = (state: RootState) => state.task.tasks
 export const currentTaskId = (state: RootState) => state.task.currentTaskId

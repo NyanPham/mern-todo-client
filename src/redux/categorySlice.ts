@@ -110,7 +110,7 @@ export const updateCategoryAsync = createAsyncThunk(
 
 export const changeCategoryOrdersAsync = createAsyncThunk(
     'categories/updateCategoryOrder',
-    async (body: UpdateOrder[]) => {
+    async (body: UpdateOrder[], { dispatch }) => {
         const promises = body.map((info) => {
             return fetch(`${import.meta.env.VITE_SERVER_URL}/api/v1/me/myCategories/${info.id}`, {
                 method: 'PATCH',
@@ -122,10 +122,13 @@ export const changeCategoryOrdersAsync = createAsyncThunk(
             })
         })
 
-        const responses = await Promise.all(promises)
-        const data: ResponseData[] = await Promise.all(responses.map((res) => res.json()))
+        try {
+            const responses = await Promise.all(promises)
+            const data: ResponseData[] = await Promise.all(responses.map((res) => res.json()))
 
-        return data
+            dispatch(setCategoriesFromOrders(body))
+            return data
+        } catch (error: any) {}
     }
 )
 
@@ -186,6 +189,11 @@ export const categorySlice = createSlice({
         },
         setHighlighted: (state, { payload }: { payload: boolean }) => {
             state.isHighlighted = payload
+        },
+        setCategoriesFromOrders: (state, { payload }: { payload: UpdateOrder[] }) => {
+            state.categories = payload.map((orderInfo) =>
+                state.categories.find((category) => category._id === orderInfo.id)
+            )
         },
     },
     extraReducers: (builder) => {
@@ -265,6 +273,7 @@ export const {
     updateCategory,
     removeCategory,
     setHighlighted,
+    setCategoriesFromOrders,
 } = categorySlice.actions
 export const categories = (state: RootState) => state.category.categories
 export const currentCategoryId = (state: RootState) => state.category.currentCategoryId
