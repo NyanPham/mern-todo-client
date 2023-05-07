@@ -206,10 +206,10 @@ export const taskSlice = createSlice({
         setTasksFromOrders: (state, { payload }: { payload: UpdateOrder[] }) => {
             const orderedTasks = [...payload.map((orderInfo) => state.tasks.find((task) => task._id === orderInfo.id)!)]
 
-            state.tasks = {
+            state.tasks = [
                 ...state.tasks.filter((task) => !payload.some((ordered) => ordered.id === task._id)),
                 ...orderedTasks,
-            }
+            ]
         },
     },
     extraReducers: (builder) => {
