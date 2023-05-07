@@ -46,7 +46,7 @@ export const deleteCategoryAsync = createAsyncThunk(
     async (body: DeleteCategoryData, { dispatch }) => {
         try {
             const url = `${import.meta.env.VITE_SERVER_URL}/api/v1/me/myCategories/${body.categoryId}`
-            const res = await fetch(url, {
+            await fetch(url, {
                 method: 'DELETE',
                 headers: {
                     'Content-Type': 'application/json',

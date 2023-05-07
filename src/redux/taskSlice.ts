@@ -65,7 +65,7 @@ export const toggleCompleteAsync = createAsyncThunk('tasks/toggleTask', async (b
 export const deleteTaskAsync = createAsyncThunk('tasks/deleteTask', async (body: DeleteTaskData, { dispatch }) => {
     try {
         const url = `${import.meta.env.VITE_SERVER_URL}/api/v1/me/myTasks/${body.taskId}`
-        const res = await fetch(url, {
+        await fetch(url, {
             method: 'DELETE',
             headers: {
                 'Content-Type': 'application/json',
