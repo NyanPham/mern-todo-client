@@ -78,7 +78,7 @@ const Categories = () => {
     // Drop end functionalities
 
     return (
-        <div className="w-full bg-white/20 rounded-lg backdrop-blur-lg shadow-white md:w-1/3 lg:w-1/4">
+        <div className="w-full bg-white/20 rounded-lg backdrop-blur-lg shadow-white md:w-1/3 lg:w-1/4 select-none">
             <div className="p-4">
                 <Heading title="List" subtitle="Task Categories" />
             </div>
