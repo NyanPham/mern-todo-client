@@ -30,11 +30,15 @@ const Navbar = () => {
 
                 <UserMenu onInteraction={closeSearchMobile} />
             </nav>
-            {showMobileSearch && (
-                <div className="w-full py-4 px-7 shadow-md bg-white/30 backdrop-blur-lg block md:hidden">
-                    <SearchBar />
-                </div>
-            )}
+            <div
+                className={`w-full py-4 px-7 shadow-md bg-white/30 backdrop-blur-lg block md:hidden transition duration-300 ${
+                    showMobileSearch
+                        ? 'opacity-100 translate-y-0 pointer-events-auto'
+                        : 'opacity-0 -translate-y-2 pointer-events-none'
+                }`}
+            >
+                <SearchBar />
+            </div>
         </header>
     )
 }
