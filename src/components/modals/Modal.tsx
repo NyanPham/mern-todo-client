@@ -2,8 +2,6 @@ import { useState, useEffect, useCallback, useRef } from 'react'
 import Heading from '../Heading'
 import { XMarkIcon } from '@heroicons/react/24/solid'
 import Button from '../buttons/Button'
-import useClickOutside from '../../hooks/useClickOutside'
-import useEventListener from '../../hooks/useEventListener'
 
 interface ModalProps {
     isOpen: boolean
@@ -38,22 +36,6 @@ const Modal: React.FC<ModalProps> = ({
     const [show, setShow] = useState<boolean>(isOpen)
 
     const modalRef = useRef<HTMLDivElement>(null)
-
-    // useEventListener(
-    //     'keydown',
-    //     (e: React.KeyboardEvent<HTMLInputElement>) => {
-    //         if (e.code === 'Enter') {
-    //             buttonAction()
-    //             return
-    //         }
-
-    //         if (e.code === 'Escape' && secondaryButtonAction != null && typeof secondaryButtonAction == 'function') {
-    //             secondaryButtonAction()
-    //             return
-    //         }
-    //     },
-    //     document
-    // )
 
     useEffect(() => {
         setShow(isOpen)
