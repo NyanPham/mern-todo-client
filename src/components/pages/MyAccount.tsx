@@ -1,3 +1,4 @@
+import { Navigate } from 'react-router-dom'
 import { useAppSelector } from '../../hooks/reduxHooks'
 import Avatar from '../Avatar'
 import Heading from '../Heading'
@@ -7,7 +8,7 @@ import UpdatePassword from '../accounts/UpdatePassword'
 const MyAccount = () => {
     const currentUser = useAppSelector((state) => state.currentUser.userInfo)
 
-    if (currentUser == null) return null
+    if (currentUser == null) return <Navigate to="/" />
 
     return (
         <div className="flex items-center justify-center gap-12 w-3/4 mx-auto">

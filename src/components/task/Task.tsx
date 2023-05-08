@@ -78,9 +78,9 @@ const Task: React.FC<Task> = ({ title, id, isComplete, dueDate, onDragStart, onD
             onDrop={onDragDrop}
             data-drag-item={id}
         >
-            <div className="flex flex-row items-center justify-start gap-3">
+            <div className="flex flex-row items-center justify-start gap-3 truncate">
                 <div
-                    className={`peer w-7 h-7 rounded-full border-2 inline-grid place-items-center transition duration-200 cursor-pointer ${
+                    className={`flex-shrink-0 peer w-7 h-7 rounded-full border-2 inline-grid place-items-center transition duration-200 cursor-pointer ${
                         isComplete ? 'border-cyan-200' : 'border-white-800'
                     }`}
                     onClick={handleToggleComplete}

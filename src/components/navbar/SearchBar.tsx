@@ -5,6 +5,7 @@ import { setSearchTerm, stopSearching } from '../../redux/searchSlice'
 import { useNavigate } from 'react-router-dom'
 
 const SearchBar = () => {
+    const currentUser = useAppSelector((state) => state.currentUser.userInfo)
     const searchTerm = useAppSelector((state) => state.search.searchTerm)
     const isSearching = useAppSelector((state) => state.search.isSearching)
     const tasks = useAppSelector((state) => state.task.tasks)
@@ -15,10 +16,12 @@ const SearchBar = () => {
     const navigate = useNavigate()
 
     useEffect(() => {
+        if (currentUser == null) return navigate('/')
+
         if (isSearching) {
             navigate(`/search/${searchTerm}`)
         }
-    }, [searchTerm, navigate])
+    }, [searchTerm, navigate, currentUser])
 
     function handleIconClick() {
         inputRef?.current?.focus()

@@ -1,7 +1,9 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import Heading from '../Heading'
 import { XMarkIcon } from '@heroicons/react/24/solid'
 import Button from '../buttons/Button'
+import useClickOutside from '../../hooks/useClickOutside'
+import useEventListener from '../../hooks/useEventListener'
 
 interface ModalProps {
     isOpen: boolean
@@ -35,6 +37,24 @@ const Modal: React.FC<ModalProps> = ({
 }) => {
     const [show, setShow] = useState<boolean>(isOpen)
 
+    const modalRef = useRef<HTMLDivElement>(null)
+
+    // useEventListener(
+    //     'keydown',
+    //     (e: React.KeyboardEvent<HTMLInputElement>) => {
+    //         if (e.code === 'Enter') {
+    //             buttonAction()
+    //             return
+    //         }
+
+    //         if (e.code === 'Escape' && secondaryButtonAction != null && typeof secondaryButtonAction == 'function') {
+    //             secondaryButtonAction()
+    //             return
+    //         }
+    //     },
+    //     document
+    // )
+
     useEffect(() => {
         setShow(isOpen)
     }, [isOpen])
@@ -45,6 +65,20 @@ const Modal: React.FC<ModalProps> = ({
         setTimeout(onClose, 300)
     }, [isOpen, setShow])
 
+    useEffect(() => {
+        if (modalRef.current == null) return
+
+        const handler = (e: Event) => {
+            if (e.target !== modalRef.current) return
+
+            handleClose()
+        }
+
+        modalRef.current.addEventListener('click', handler)
+
+        return () => modalRef.current?.removeEventListener('click', handler)
+    }, [modalRef.current, handleClose])
+
     if (!isOpen) return null
 
     return (
@@ -52,6 +86,7 @@ const Modal: React.FC<ModalProps> = ({
             className={`fixed top-0 left-0 w-full h-full bg-gray-900/70 grid place-items-center transition duration-300 z-20 ${
                 show ? 'opacity-100' : 'opacity-0'
             }`}
+            ref={modalRef}
         >
             <div
                 className={`w-4/5 md:w-1/2 lg:w-[450px] bg-white py-2 px-3 md:py-4 md:px-6 rounded-lg shadow-lg flex flex-col gap-4 transition duration-300 ${

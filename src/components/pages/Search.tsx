@@ -1,4 +1,4 @@
-import { useNavigate } from 'react-router-dom'
+import { Navigate, useNavigate } from 'react-router-dom'
 import { useAppDispatch, useAppSelector } from '../../hooks/reduxHooks'
 import { selectCategory, setHighlighted as setCategoryHighlighted } from '../../redux/categorySlice'
 import { AppDispatch } from '../../redux/store'
@@ -11,7 +11,7 @@ function handleSelectCategorySearch(categoryId: string, dispatch: AppDispatch) {
     dispatch(selectCategory({ categoryId }))
     dispatch(setCategoryHighlighted(true))
 }
-    
+
 function handleSelectTaskSearch(categoryId: string, taskId: string, dispatch: AppDispatch) {
     dispatch(selectCategory({ categoryId }))
     dispatch(setCurrentTaskId({ taskId }))
@@ -19,6 +19,7 @@ function handleSelectTaskSearch(categoryId: string, taskId: string, dispatch: Ap
 }
 
 const Search = () => {
+    const currentUser = useAppSelector((state) => state.currentUser.userInfo)
     const searchTerm = useAppSelector((state) => state.search.searchTerm)
     const searchResults = useAppSelector((state) => state.search.searchResults)
     const dispatch = useAppDispatch()
@@ -34,6 +35,8 @@ const Search = () => {
 
         navigate('/')
     }
+
+    if (currentUser == null) return <Navigate to="/" />
 
     return (
         <section className="w-full px-7">
