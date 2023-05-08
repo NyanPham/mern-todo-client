@@ -45,7 +45,7 @@ export default function useDraggable(dependencies: any[], finishDropHandler?: ()
                 ])
             }
         },
-        1500,
+        500,
         [count]
     )
 
