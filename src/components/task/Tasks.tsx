@@ -61,7 +61,7 @@ const Tasks = () => {
     }
 
     return (
-        <div className="w-full bg-white/20 rounded-lg backdrop-blur-lg shadow-white overflow-hidden md:w-2/3 lg:-3/5">
+        <div className="w-full bg-white/20 rounded-lg backdrop-blur-lg shadow-white overflow-hidden md:w-2/3 lg:-3/5 select-none">
             <CategoryHeading />
             <hr />
             {currentCategoryId ? (
