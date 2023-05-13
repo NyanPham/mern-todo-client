@@ -31,7 +31,7 @@ const Tasks = () => {
 
     const [taskText, setTaskText] = useState<string>('')
 
-    function onTaskTextChange(e: React.ChangeEvent<HTMLInputElement>) {
+    function onTaskTextChange(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) {
         setTaskText(e.target.value)
     }
 

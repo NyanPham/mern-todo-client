@@ -60,7 +60,6 @@ export const Input: React.FC<InputProps> = ({
                     placeholder={small ? label : ' '}
                     required={required}
                     value={value}
-                    onKeyDown={onKeyPress}
                 ></textarea>
             ) : (
                 <input
