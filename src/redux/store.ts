@@ -9,6 +9,7 @@ import editTaskModalSlice from './editTaskModalSlice'
 import editCategoryModalSlice from './editCategoryModalSlice'
 import loadingLayerSlice from './loadingLayerSlice'
 import searchSlice from './searchSlice'
+import kanbanSlice from './kanbanSlice'
 
 export const store = configureStore({
     reducer: {
@@ -22,6 +23,7 @@ export const store = configureStore({
         editCategoryModal: editCategoryModalSlice,
         loadingLayer: loadingLayerSlice,
         search: searchSlice,
+        kanban: kanbanSlice,
     },
 })
 

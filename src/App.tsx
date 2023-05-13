@@ -6,6 +6,7 @@ import ToastContainer from './components/toasts/ToastContainer'
 import MyAccount from './components/pages/MyAccount'
 import Search from './components/pages/Search'
 import LoadingLayer from './components/LoadingLayer'
+import Kanban from './components/pages/Kanban'
 
 function App() {
     return (
@@ -14,6 +15,7 @@ function App() {
                 <Routes>
                     <Route path="/" element={<Home />} />
                     <Route path="/myAccount" element={<MyAccount />} />
+                    <Route path="/kanban" element={<Kanban />} />
                     <Route path="/search/:searchTerm" element={<Search />} />
                 </Routes>
             </Layout>

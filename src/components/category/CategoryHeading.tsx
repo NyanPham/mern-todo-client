@@ -4,6 +4,7 @@ import { deleteCategoryAsync, removeCategory, setHighlighted } from '../../redux
 import { openCategoryModal } from '../../redux/editCategoryModalSlice'
 import Heading from '../Heading'
 import CategoryButtons from './CategoryButtons'
+import { setToastInfo, open as openToast } from '../../redux/toastSlice'
 
 const CategoryHeading = () => {
     const currentCategoryId = useAppSelector((state) => state.category.currentCategoryId)
@@ -25,8 +26,20 @@ const CategoryHeading = () => {
     }
 
     const handleDeleteCategory = () => {
-        dispatch(removeCategory({ categoryId: currentCategoryId }))
-        dispatch(deleteCategoryAsync({ categoryId: currentCategoryId }))
+        dispatch(
+            setToastInfo({
+                title: `Are you sure you want to delete the category?`,
+                type: 'warning',
+                autoClose: false,
+                needsConfirm: true,
+                confirmCallback: () => {
+                    dispatch(removeCategory({ categoryId: currentCategoryId }))
+                    dispatch(deleteCategoryAsync({ categoryId: currentCategoryId }))
+                },
+            })
+        )
+
+        dispatch(openToast())
     }
 
     return (

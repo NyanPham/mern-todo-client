@@ -72,9 +72,9 @@ export interface InputProps {
     label?: string
     required?: boolean
     disabled?: boolean
-    onChange: (e: React.ChangeEvent<HTMLInputElement>) => void
+    onChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void
     onError?: () => void
-    onBlur?: (e: React.FocusEvent<HTMLInputElement>) => void
+    onBlur?: (e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>) => void
     validate?: (value: any) => InputValidateResult | void
     small?: boolean
     bgTransparent?: boolean
@@ -176,4 +176,9 @@ export interface ISearchPayload {
 export interface ISearchResult {
     type: 'category' | 'task'
     data: Category | Task
+}
+
+export interface IKanbanCard {
+    title: string
+    description?: string
 }

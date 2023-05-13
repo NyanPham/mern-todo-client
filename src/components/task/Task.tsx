@@ -10,6 +10,7 @@ import {
 } from '../../redux/taskSlice'
 import TaskButtons from './TaskButtons'
 import { openEditTaskModal } from '../../redux/editTaskModalSlice'
+import { open as openToast, setToastInfo } from '../../redux/toastSlice'
 
 interface Task {
     id: string
@@ -48,8 +49,20 @@ const Task: React.FC<Task> = ({ title, id, isComplete, dueDate, onDragStart, onD
     }
 
     function handleDeleteTask() {
-        dispatch(removeTask({ taskId: id }))
-        dispatch(deleteTaskAsync({ taskId: id }))
+        dispatch(
+            setToastInfo({
+                title: `Are you sure you want to delete the task?`,
+                type: 'warning',
+                autoClose: false,
+                needsConfirm: true,
+                confirmCallback: () => {
+                    dispatch(removeTask({ taskId: id }))
+                    dispatch(deleteTaskAsync({ taskId: id }))
+                },
+            })
+        )
+
+        dispatch(openToast())
     }
 
     function handleOpenEditModal() {

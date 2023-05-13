@@ -110,8 +110,12 @@ const UserMenu: React.FC<UserMenuProps> = ({ onInteraction }) => {
                             <div className="py-2 px-5 cursor-pointer hover:bg-sky-500/70">My Account</div>
                         </Link>
                         <hr />
+                        <Link to="/kanban" onClick={() => setIsOpen(false)}>
+                            <div className="py-2 px-5 cursor-pointer hover:bg-sky-500/70">Kanban board</div>
+                        </Link>
+                        <hr />
                         <div className="py-2 px-5 cursor-pointer hover:bg-sky-500/70" onClick={() => {}}>
-                            Kanban board
+                            Notebook
                         </div>
                         <hr />
                         <div className="py-2 px-5 cursor-pointer hover:bg-sky-500/70" onClick={handleLogOut}>

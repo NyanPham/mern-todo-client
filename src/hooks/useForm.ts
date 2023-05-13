@@ -7,7 +7,7 @@ export default function useForm<T>(initialState: T, dependencies: any[]) {
         setForm(initialState)
     }, [...dependencies])
 
-    const onFormChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const onFormChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         setForm((prevForm) => ({
             ...prevForm,
             [e.target.name]: e.target.value,

@@ -44,7 +44,7 @@ const Categories = () => {
 
     const [categoryText, setCategoryText] = useState<string>('')
 
-    function onCategoryChange(e: React.ChangeEvent<HTMLInputElement>) {
+    function onCategoryChange(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) {
         setCategoryText(e.target.value)
     }
 
